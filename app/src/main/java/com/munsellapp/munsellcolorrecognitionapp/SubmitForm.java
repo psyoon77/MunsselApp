@@ -18,6 +18,12 @@ import android.widget.Toast;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -32,7 +38,7 @@ import java.lang.Math;
 passed from ImageActivity and location will appear automatically. User has the option to save the information to the data.txt text
 file, which will promp the DataForm class.*/
 
-public class SubmitForm extends AppCompatActivity implements View.OnClickListener,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class SubmitForm extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     ImageButton save, email;
     EditText idNumber, notes;
     TextView munsell, munsellValueText, updatedText, expectedMunsellValueText, distanceValueText, rgbDistanceValueText;
@@ -240,6 +246,7 @@ public class SubmitForm extends AppCompatActivity implements View.OnClickListene
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case PERMISSION_ACCESS_COARSE_LOCATION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
