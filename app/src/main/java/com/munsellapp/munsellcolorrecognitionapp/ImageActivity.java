@@ -9,7 +9,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -34,6 +33,8 @@ import java.util.Date;
 import static com.munsellapp.munsellcolorrecognitionapp.R.id.spinner;
 import static com.munsellapp.munsellcolorrecognitionapp.R.id.spinner2;
 import static com.munsellapp.munsellcolorrecognitionapp.R.id.spinner3;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 
 //This class takes the image selected from gallery or take by the camera, get's the image's munsell value,
