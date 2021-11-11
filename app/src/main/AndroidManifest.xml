@@ -19,6 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:exported="true"
             android:name=".MainActivity"
             android:label="Munsell"
             android:launchMode="singleTask"
@@ -30,25 +31,31 @@
             </intent-filter>
         </activity>
         <activity
+            android:exported="true"
             android:name=".ImageActivity"
             android:label="Munsell"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
+            android:exported="true"
             android:name=".SubmitForm"
             android:label="Munsell"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity android:name=".DataForm"
+            android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"/>
         <activity android:name=".Calibrate"
+            android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"/>
         <activity android:name=".CalibrateHome"
+            android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"/>
         <activity android:name=".ImageSelection"
+            android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"></activity>
     </application>
