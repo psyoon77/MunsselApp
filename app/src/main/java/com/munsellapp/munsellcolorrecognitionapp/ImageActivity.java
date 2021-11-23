@@ -123,8 +123,19 @@ passes it to imageview -JB
         }
         /* Takes bitmp image from gallery, finds Munsell, and resizes image to fit in imageview -JB*/
         else if (getIntent().hasExtra("GalleryImage")) {
-            b = BitmapFactory.decodeByteArray(
-                    getIntent().getByteArrayExtra("GalleryImage"), 0, getIntent().getByteArrayExtra("GalleryImage").length);
+            // b = BitmapFactory.decodeByteArray(
+                    // getIntent().getByteArrayExtra("GalleryImage"), 0, getIntent().getByteArrayExtra("GalleryImage").length);
+
+            Uri uri = getIntent().getData();
+
+            //Uri.fromFile(hfile)
+            Bitmap b = null;
+            try {
+                b = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
 
             try {
                 munsell(findViewById(R.id.musellValue),b);
@@ -185,7 +196,7 @@ passes it to imageview -JB
 
         CSVReader csvReader = new CSVReader(is);
         String[] line;
-        csvReader.readNext();
+        csvReader.readNext(); // this line skips the header(the first line) of the munsell.csv
         getSpecs(bit);
 
 
@@ -199,15 +210,17 @@ passes it to imageview -JB
 
 
         while ((line = csvReader.readNext()) != null) {
-            compareRed = Integer.parseInt(line[line.length - 3]);
-            compareGreen = Integer.parseInt(line[line.length - 2]);
-            compareBlue = Integer.parseInt(line[line.length - 1]);
-            if (getDistance(red, green, blue, compareRed, compareGreen, compareBlue) < smallestDif) {
-                smallestDif = getDistance(red, green, blue, compareRed, compareGreen, compareBlue);
-                smallRed = Integer.parseInt(line[3]);
-                smallGreen = Integer.parseInt(line[4]);
-                smallBlue = Integer.parseInt(line[5]);
-            } //else
+            if (line.length == 6) {
+                compareRed = Integer.parseInt(line[line.length - 3]);
+                compareGreen = Integer.parseInt(line[line.length - 2]);
+                compareBlue = Integer.parseInt(line[line.length - 1]);
+                if (getDistance(red, green, blue, compareRed, compareGreen, compareBlue) < smallestDif) {
+                    smallestDif = getDistance(red, green, blue, compareRed, compareGreen, compareBlue);
+                    smallRed = Integer.parseInt(line[3]);
+                    smallGreen = Integer.parseInt(line[4]);
+                    smallBlue = Integer.parseInt(line[5]);
+                }
+            }//else
                 //csvReader.readNext();
         }
         csvReader.close();
@@ -227,15 +240,17 @@ passes it to imageview -JB
 
 
         while ((line2 = csvReader2.readNext()) != null) {
-            if (smallRed == (Integer.parseInt(line2[line2.length - 3]))) {
-                if (smallGreen == (Integer.parseInt(line2[line2.length - 2]))) {
-                    if (smallBlue == Integer.parseInt(line2[line2.length - 1])) {
-                        munsellValue = line2[0] + " " + line2[1] + "/" + line2[2];
-                        foundMunsellHue=line2[0];
-                        foundMunsellValue=line2[1];
-                        foundMunsellChroma=line2[2];
-                        text.setText(munsellValue);
+            if (line2.length == 6) {
+                if (smallRed == (Integer.parseInt(line2[line2.length - 3]))) {
+                    if (smallGreen == (Integer.parseInt(line2[line2.length - 2]))) {
+                        if (smallBlue == Integer.parseInt(line2[line2.length - 1])) {
+                            munsellValue = line2[0] + " " + line2[1] + "/" + line2[2];
+                            foundMunsellHue = line2[0];
+                            foundMunsellValue = line2[1];
+                            foundMunsellChroma = line2[2];
+                            text.setText(munsellValue);
 
+                        }
                     }
                 }
             }
@@ -257,7 +272,7 @@ passes it to imageview -JB
 
 
         while ((line5 = csvReader5.readNext()) != null) {
-            if (foundMunsellHue.equals((line5[line5.length - 6]))) {
+            if (line5.length == 6 && foundMunsellHue.equals((line5[line5.length - 6]))) {
                 if (foundMunsellValue.equals((line5[line5.length - 5]))) {
                     if (foundMunsellChroma.equals((line5[line5.length - 4]))) {
                         finalRed = Integer.parseInt(line5[3]);
@@ -488,6 +503,7 @@ passes it to imageview -JB
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == TAKE_ANOTHERPIC && resultCode == RESULT_OK) {
             photo = data.getData();
             performCrop();
