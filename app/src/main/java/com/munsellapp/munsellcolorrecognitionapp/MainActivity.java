@@ -1,9 +1,11 @@
 package com.munsellapp.munsellcolorrecognitionapp;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,8 +15,10 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 /* THis activity displays the main screen of the app, with three buttons (Take picture, Select from gallery and calibrate camera)
@@ -33,9 +37,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private Button chooseImage;
     private Uri photo;
     private Uri caliPhoto;
+    public Uri resultProvider;
+    private static final String PHOTOS="photos";
+    private File output = null;
     protected final static String TAG = "ColorUtils";
-
-
+    private static final String FILENAME="CameraContentDemo.jpeg";
+    private static final String EXTRA_FILENAME="com.munsellapp.munsellcolorrecognitionapp.EXTRA_FILENAME";
+    private static final int PICK_FROM_GALLERY = 1;
 
 
 
@@ -47,7 +55,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         chooseImage = (Button) findViewById(R.id.ChooseImage);
         chooseImage.setOnClickListener(this);
 
-        new AlertDialog.Builder(MainActivity.this)
+        /* new AlertDialog.Builder(MainActivity.this)
                 .setTitle("Alert")
                 .setMessage("If you would like to use the location feature of this app, please turn your" +
                         " location on.")
@@ -57,9 +65,29 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     }
                 })
 
-                .show();
+                .show(); */
+
+        if (savedInstanceState==null) {
+            output= new File(new File(getFilesDir(), PHOTOS), FILENAME); //createImageFile();//
+
+            if (output.exists()) {
+                output.delete();
+            }
+            else {
+                output.getParentFile().mkdirs();
+            }
 
 
+        }
+        else {
+            output=(File)savedInstanceState.getSerializable(EXTRA_FILENAME);
+        }
+
+
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICK_FROM_GALLERY);
+        }
 
     }
 
@@ -113,14 +141,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
 
         if (requestCode == SELECT_FILE && resultCode == RESULT_OK) {
-            Bitmap bm;
+            // Bitmap bm;
             if (data != null) {
-                try {
-                    bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
-                    PassBitmapToNextActivity(bm,ImageActivity.class,"GalleryImage");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }}}
+                // try {
+                    // bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
+                    PassBitmapToNextActivity(data.getData(),ImageActivity.class,"GalleryImage");
+                // } catch (IOException e) {
+                   // e.printStackTrace();
+                }}// }
 
         if (requestCode == CALIBRATE_PIC && resultCode == RESULT_OK){
             caliPhoto = data.getData();
@@ -131,24 +159,25 @@ public class MainActivity extends Activity implements View.OnClickListener {
             Bundle extras = data.getExtras();
             // get the cropped bitmap
             Bitmap theCaliPic = extras.getParcelable("data");
-            PassBitmapToNextActivity(theCaliPic,Calibrate.class,"CalibrateImage");
+            // PassBitmapToNextActivity(theCaliPic,Calibrate.class,"CalibrateImage");
         }
         else if (requestCode == CROP_PIC) {
             // get the returned data
             Bundle extras = data.getExtras();
             // get the cropped bitmap
             Bitmap thePic = extras.getParcelable("data");
-            PassBitmapToNextActivity(thePic,ImageActivity.class,"CameraImage");
+            // PassBitmapToNextActivity(thePic,ImageActivity.class,"CameraImage");
 
         }
     }
 
     /*Passes Bitmap from any intent (camera, gallery, or calibrate camera) and passes it to specified activity)*/
-    public void PassBitmapToNextActivity (Bitmap bm, Class myClass, String extraName ){
+    public void PassBitmapToNextActivity (Uri uri, Class myClass, String extraName ){
         Intent intent = new Intent(this, myClass);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        intent.putExtra(extraName, stream.toByteArray());
+        // ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        // bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        intent.putExtra(extraName, resultProvider );
+        intent.setData(uri);
         startActivity(intent);
 
     }
