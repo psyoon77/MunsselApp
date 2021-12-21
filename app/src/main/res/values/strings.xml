@@ -2,6 +2,7 @@
     <string name="app_name">Munsell Color Recognition App</string>
     <string name="title_activity_list_of_data">ListOfData</string>
     <string name="MunsellHuePrompt">Expected Munsell</string>
+    <string name="msg_no_camera">Camera Cannot Be Used!</string>
     <string-array name="MunsellHueArray">
         <item>5.0R</item>
         <item>7.5R</item>
